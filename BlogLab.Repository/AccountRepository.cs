@@ -18,6 +18,11 @@ namespace BlogLab.Repository
         // Iconfiguration allows acces to the appsettings.json.
         private readonly IConfiguration _config;
 
+        public AccountRepository(IConfiguration config)
+        {
+            _config = config;
+        }
+
         public async Task<IdentityResult> CreateAsync(ApplicationUserIdentity user, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
