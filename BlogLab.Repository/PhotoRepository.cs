@@ -14,17 +14,19 @@ namespace BlogLab.Repository
     public class PhotoRepository : IPhotoRepository
     {
         private readonly IConfiguration _config;
+        private readonly string _connectionString;
 
         public PhotoRepository(IConfiguration config)
         {
             _config = config;
+            _connectionString = _config.GetConnectionString("DefaultConnection");
         }
 
         public async Task<int> DeleteAsync(int photoId)
         {
             int affectedRows = 0;
 
-            using (var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection")))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
 
@@ -42,7 +44,7 @@ namespace BlogLab.Repository
         {
             IEnumerable<Photo> photos;
 
-            using(var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection")))
+            using(var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
 
@@ -60,7 +62,7 @@ namespace BlogLab.Repository
         {
             Photo photo;
 
-            using(var connection = new SqlConnection(_config.GetConnectionString("DefaultConnectionstring")))
+            using(var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync();
 
@@ -76,7 +78,28 @@ namespace BlogLab.Repository
 
         public async Task<Photo> InsertAsync(PhotoCreate photoCreate, int applicationUserId)
         {
-            throw new NotImplementedException();
+            var dataTable = new DataTable();
+            dataTable.Columns.Add("PublicId", typeof(string));
+            dataTable.Columns.Add("ImageUrl", typeof(string));
+            dataTable.Columns.Add("Description", typeof(string));
+
+            dataTable.Rows.Add(photoCreate.PublicId, photoCreate.ImageUrl, photoCreate.Description);
+
+            int newPhotoId;
+
+            using(var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                newPhotoId = await connection.ExecuteScalarAsync<int>(
+                    "Photo_Insert",
+                    new { Photo = dataTable.AsTableValuedParameter("dbo.PhotoType") },
+                    commandType: CommandType.StoredProcedure);
+            }
+
+            Photo photo = await GetAsync(newPhotoId);
+
+            return photo;
         }
     }
 }
