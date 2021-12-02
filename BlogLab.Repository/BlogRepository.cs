@@ -133,7 +133,12 @@ namespace BlogLab.Repository
 
                 newBlogId = await connection.ExecuteScalarAsync<int?>(
                     "Blog_Upsert",
-                    new { Blog = dataTable.AsTableValuedParameter("dbo.BlogType"), ApplicationUserId = applicationUserId },
+                    new { 
+                        BlogId = blogCreate.BlogId, 
+                        ApplicationUserId = applicationUserId,
+                        Title = blogCreate.Title,
+                        Content = blogCreate.Content
+                    },
                     commandType: CommandType.StoredProcedure);
             }
 

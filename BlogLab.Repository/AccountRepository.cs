@@ -17,6 +17,7 @@ namespace BlogLab.Repository
     {
         // Iconfiguration allows acces to the appsettings.json.
         private readonly IConfiguration _config;
+        private readonly string _connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=BlogDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
 
         public AccountRepository(IConfiguration config)
         {
@@ -44,7 +45,7 @@ namespace BlogLab.Repository
                 user.PasswordHash
                 );
 
-            using (var connection = new SqlConnection(_config.GetConnectionString("DefaultConnection")))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
 
@@ -61,7 +62,7 @@ namespace BlogLab.Repository
 
             ApplicationUserIdentity applicationUser;
 
-            using (var connection = new SqlConnection(_config.GetConnectionString("DefaultConnectionstring")))
+            using (var connection = new SqlConnection(_connectionString))
             {
                 await connection.OpenAsync(cancellationToken);
 

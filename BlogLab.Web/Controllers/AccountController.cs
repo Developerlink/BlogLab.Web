@@ -62,13 +62,13 @@ namespace BlogLab.Web.Controllers
         {
             var applicationUserIdentity = await _userManager.FindByNameAsync(applicationUserLogin.Username);
 
-            if(applicationUserIdentity != null)
+            if (applicationUserIdentity != null)
             {
                 var result = await _signInManager.CheckPasswordSignInAsync(
                     applicationUserIdentity,
                     applicationUserLogin.Password, false);
 
-                if(result.Succeeded)
+                if (result.Succeeded)
                 {
                     ApplicationUser applicationUser = new ApplicationUser
                     {
